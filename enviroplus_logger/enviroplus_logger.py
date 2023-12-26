@@ -6,13 +6,13 @@ import os
 import sys
 import time
 import json
-import boto3
 import logging
+import argparse
+import boto3
 from smbus2 import SMBus
 from bme280 import BME280
 from enviroplus import gas
 from botocore.exceptions import ClientError
-
 
 try:
     # Transitional fix for breaking change in LTR559
@@ -23,7 +23,7 @@ except ImportError:
     import ltr559
 
 
-def upload_file(file_name, bucket, object_name=None):
+def upload_file(file_name: str, bucket: str, object_name: str = None) -> bool:
     """Upload a file to an S3 bucket
 
     :param file_name: File to upload
@@ -47,32 +47,58 @@ def upload_file(file_name, bucket, object_name=None):
     return True
 
 
-obj_to_upload = {}
+def get_environmantal_data(bme280: BME280) -> dict:
+    """
+    Function to retrieve and store the environmantal data in a dictionary
+    """
+    obj_to_upload = {}
+    obj_to_upload["temperature"] = bme280.get_temperature()
+    obj_to_upload["pressure"] = bme280.get_pressure()
+    obj_to_upload["humidity"] = bme280.get_humidity()
+    obj_to_upload["brightness"] = ltr559.get_lux()
+    obj_to_upload["proximity"] = ltr559.get_proximity()
+    obj_to_upload["gas_sensor"] = str(gas.read_all())
 
-bus = SMBus(1)
-bme280 = BME280(i2c_dev=bus)
+    return obj_to_upload
 
-try:
-    while True:
-        timestamp = time.time()
-        obj_to_upload["timestamp"] = timestamp
 
-        obj_to_upload["temperature"] = bme280.get_temperature()
-        obj_to_upload["pressure"] = bme280.get_pressure()
-        obj_to_upload["humidity"] = bme280.get_humidity()
+def main(upload_interval: int) -> None:
+    """
+    Main Function
+    """
+    bus = SMBus(1)
+    bme280 = BME280(i2c_dev=bus)
+    file = "enviro-results.json"
+    obj_to_upload = get_environmantal_data(bme280)
 
-        obj_to_upload["brightness"] = ltr559.get_lux()
-        obj_to_upload["proximity"] = ltr559.get_proximity()
+    try:
+        while True:
+            obj_to_upload["timestamp"] = time.time()
+            print(obj_to_upload)
 
-        gas_readings = gas.read_all()
-        obj_to_upload["gas_sensor"] = str(gas_readings)
+            with open(file, "w", encoding="utf-8") as fp:
+                json.dump(obj_to_upload, fp)
 
-        print(obj_to_upload)
-        file = "enviro-results.json"
-        with open(file, "w") as fp:
-            json.dump(obj_to_upload, fp)
+            upload_file(file, "myenvirobucket")
 
-        upload_file("enviro-results.json", "myenvirobucket")
+            time.sleep(upload_interval)
 
-except KeyboardInterrupt:
-    sys.exit
+    except KeyboardInterrupt:
+        sys.exit()
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="python enviroplus_logger.py -u [upload interval time in seconds]"
+    )
+
+    # Add an argument
+    parser.add_argument(
+        "-u",
+        "--uploadinterval",
+        help="upload interval time of the environmental data upload",
+    )
+
+    # Parse the arguments
+    args = parser.parse_args()
+    main(int(args.uploadinterval))
