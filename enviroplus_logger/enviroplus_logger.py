@@ -22,6 +22,12 @@ try:
 except ImportError:
     import ltr559
 
+logging.basicConfig(
+    format="[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s", level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
+
 
 def upload_file(file_name: str, bucket: str, object_name: str = None) -> bool:
     """Upload a file to an S3 bucket
@@ -39,8 +45,7 @@ def upload_file(file_name: str, bucket: str, object_name: str = None) -> bool:
     # Upload the file
     s3_client = boto3.client("s3")
     try:
-        response = s3_client.upload_file(file_name, bucket, object_name)
-        print(response)
+        s3_client.upload_file(file_name, bucket, object_name)
     except ClientError as e:
         logging.error(e)
         return False
@@ -62,34 +67,36 @@ def get_environmantal_data(bme280: BME280) -> dict:
     return obj_to_upload
 
 
-def main(upload_interval: int) -> None:
+def main(upload_interval: int, file: str) -> None:
     """
     Main Function
     """
     bus = SMBus(1)
     bme280 = BME280(i2c_dev=bus)
-    file = "enviro-results.json"
+
+    logging.info("Getting environmental data")
     obj_to_upload = get_environmantal_data(bme280)
 
     try:
         while True:
             obj_to_upload["timestamp"] = time.time()
-            print(obj_to_upload)
-
+            logging.info("Environmental data: %s", obj_to_upload)
+            logging.info("Persisting data temporarily in %s", file)
             with open(file, "w", encoding="utf-8") as fp:
                 json.dump(obj_to_upload, fp)
-
+            logging.info("Uploading data to AWS s3")
             upload_file(file, "myenvirobucket")
-
+            logging.info("Waiting for %d s", upload_interval)
             time.sleep(upload_interval)
 
     except KeyboardInterrupt:
+        logging.info("Got KeyboardInterrupt")
         sys.exit()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="python enviroplus_logger.py -u [upload interval time in seconds]"
+        description="Simple logger of environmental data with Enviro+ hardware"
     )
 
     # Add an argument
@@ -98,7 +105,10 @@ if __name__ == "__main__":
         "--uploadinterval",
         help="upload interval time of the environmental data upload",
     )
+    parser.add_argument(
+        "-f", "--file", help="temporary file to persist environmental data"
+    )
 
     # Parse the arguments
     args = parser.parse_args()
-    main(int(args.uploadinterval))
+    main(int(args.uploadinterval), args.file)
