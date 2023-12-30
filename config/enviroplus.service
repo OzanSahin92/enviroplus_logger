@@ -1,0 +1,12 @@
+[Unit]
+Description=Simple logger of environmental data with Enviro+ hardware
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python /usr/bin/enviroplus_logger.py -u 600 -f /home/ozan/Desktop/enviro-results.json
+Restart=on-failure
+User=ozan
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
