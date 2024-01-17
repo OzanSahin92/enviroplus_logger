@@ -29,18 +29,21 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def upload_file(file_name: str, bucket: str, object_name: str = None) -> bool:
+def upload_file(
+    file_name: str, bucket: str, current_time: float, object_name: str = None
+) -> bool:
     """Upload a file to an S3 bucket
 
     :param file_name: File to upload
     :param bucket: Bucket to upload to
+    :param current_time: Current time in seconds since epoch 1970
     :param object_name: S3 object name. If not specified then file_name is used
     :return: True if file was uploaded, else False
     """
 
     # If S3 object_name was not specified, use file_name
     if object_name is None:
-        object_name = os.path.basename(file_name)
+        object_name = str(current_time) + "_" + os.path.basename(file_name)
 
     # Upload the file
     s3_client = boto3.client("s3")
@@ -79,13 +82,14 @@ def main(upload_interval: int, file: str) -> None:
 
     try:
         while True:
-            obj_to_upload["timestamp"] = time.time()
+            current_time = time.time()
+            obj_to_upload["timestamp"] = current_time
             logging.info("Environmental data: %s", obj_to_upload)
             logging.info("Persisting data temporarily in %s", file)
             with open(file, "w", encoding="utf-8") as fp:
                 json.dump(obj_to_upload, fp)
             logging.info("Uploading data to AWS s3")
-            upload_file(file, "myenvirobucket")
+            upload_file(file, "myenvirobucket", current_time)
             logging.info("Waiting for %d s", upload_interval)
             time.sleep(upload_interval)
 

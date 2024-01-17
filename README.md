@@ -1,3 +1,3 @@
 # TODOs
-* create a cloudwatch/grafana dashboard
+* analyze constant values og enviro logger (Bug?)
 * automate aws infrastructure with cdk and cloudformation
