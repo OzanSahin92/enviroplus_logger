@@ -9,6 +9,9 @@ s3 = boto3.client("s3")
 
 
 def prepare_data_timestream(data: dict) -> dict:
+    oxidising = data["gas_sensor"].split(" ")[1]
+    reducing = data["gas_sensor"].split(" ")[3]
+    nh3 = data["gas_sensor"].split(" ")[5]
     record = {
         "Dimensions": [
             {"Name": "temperature", "Value": str(data["temperature"])},
@@ -16,7 +19,9 @@ def prepare_data_timestream(data: dict) -> dict:
             {"Name": "humidity", "Value": str(data["humidity"])},
             {"Name": "brightness", "Value": str(data["brightness"])},
             {"Name": "proximity", "Value": str(data["proximity"])},
-            {"Name": "gas_sensor", "Value": data["gas_sensor"]},
+            {"Name": "oxidising", "Value": oxidising},
+            {"Name": "reducing", "Value": reducing},
+            {"Name": "nh3", "Value": nh3},
         ],
         "MeasureName": "sensor_data",
         "MeasureValue": "1",

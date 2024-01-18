@@ -43,7 +43,7 @@ def upload_file(
 
     # If S3 object_name was not specified, use file_name
     if object_name is None:
-        object_name = str(current_time) + "_" + os.path.basename(file_name)
+        object_name = str(int(current_time)) + "_" + os.path.basename(file_name)
 
     # Upload the file
     s3_client = boto3.client("s3")
@@ -78,10 +78,10 @@ def main(upload_interval: int, file: str) -> None:
     bme280 = BME280(i2c_dev=bus)
 
     logging.info("Getting environmental data")
-    obj_to_upload = get_environmantal_data(bme280)
 
     try:
         while True:
+            obj_to_upload = get_environmantal_data(bme280)
             current_time = time.time()
             obj_to_upload["timestamp"] = current_time
             logging.info("Environmental data: %s", obj_to_upload)
