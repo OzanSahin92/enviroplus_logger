@@ -1,5 +1,4 @@
 # TODOs
-* correct pytest tests
 * automate aws infrastructure with cdk and cloudformation
 
 

@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 Simple environmantal data logger using envioplus library for Enviro+ hardware
 """
@@ -11,16 +12,7 @@ import argparse
 import boto3
 from smbus2 import SMBus
 from bme280 import BME280
-from enviroplus import gas
 from botocore.exceptions import ClientError
-
-try:
-    # Transitional fix for breaking change in LTR559
-    from ltr559 import LTR559
-
-    ltr559 = LTR559()
-except ImportError:
-    import ltr559
 
 logging.basicConfig(
     format="[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s", level=logging.INFO
@@ -49,13 +41,13 @@ def upload_file(
     s3_client = boto3.client("s3")
     try:
         s3_client.upload_file(file_name, bucket, object_name)
-    except ClientError as e:
+    except (ClientError, Exception) as e:
         logging.error(e)
         return False
     return True
 
 
-def get_environmantal_data(bme280: BME280) -> dict:
+def get_environmantal_data(bme280: BME280, gas: object, ltr559: object) -> dict:
     """
     Function to retrieve and store the environmantal data in a dictionary
     """
@@ -77,11 +69,22 @@ def main(upload_interval: int, file: str) -> None:
     bus = SMBus(1)
     bme280 = BME280(i2c_dev=bus)
 
+    # Lazy importing the enviro modules here for testability on x86 machine
+    from enviroplus import gas
+
+    try:
+        # Transitional fix for breaking change in LTR559
+        from ltr559 import LTR559
+
+        ltr559 = LTR559()
+    except ImportError:
+        import ltr559
+
     logging.info("Getting environmental data")
 
     try:
         while True:
-            obj_to_upload = get_environmantal_data(bme280)
+            obj_to_upload = get_environmantal_data(bme280, gas, ltr559)
             current_time = time.time()
             obj_to_upload["timestamp"] = current_time
             logging.info("Environmental data: %s", obj_to_upload)
@@ -108,9 +111,13 @@ if __name__ == "__main__":
         "-u",
         "--uploadinterval",
         help="upload interval time of the environmental data upload",
+        required=True,
     )
     parser.add_argument(
-        "-f", "--file", help="temporary file to persist environmental data"
+        "-f",
+        "--file",
+        help="temporary file to persist environmental data",
+        required=True,
     )
 
     # Parse the arguments
