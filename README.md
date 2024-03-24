@@ -1,5 +1,5 @@
 # TODOs
-* automate aws infrastructure with cdk and cloudformation
+* clean up aws infrastructure
 
 
 # Welcome to your CDK Python project!
