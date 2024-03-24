@@ -7,7 +7,7 @@ from aws_cdk import (
     Duration,
     RemovalPolicy,
     SecretValue,
-    aws_lambda_event_sources as lambda_event_sources
+    aws_lambda_event_sources as lambda_event_sources,
 )
 from constructs import Construct
 import os
@@ -76,7 +76,9 @@ class EnviroLoggerStack(Stack):
             password=SecretValue.plain_text(os.getenv("IAM_USER_MRERZINCAN_ENVIRO_PW")),
         )
         iam_user2 = iam.User(
-            self, "hakan_enviro", password=SecretValue.plain_text(os.getenv("IAM_USER_HAKAN_ENVIRO_PW"))
+            self,
+            "hakan_enviro",
+            password=SecretValue.plain_text(os.getenv("IAM_USER_HAKAN_ENVIRO_PW")),
         )
 
         enviro_group.add_user(iam_user1)
@@ -93,6 +95,35 @@ class EnviroLoggerStack(Stack):
         # S3 bucket for error logs
         timestream_error_logs_bucket = s3.Bucket(
             self, "mytimestreamerrorlogs", removal_policy=RemovalPolicy.DESTROY
+        )
+
+        # Timestream database
+        timestream_database = timestream.CfnDatabase(
+            self, "MyEnviroTimestreamDatabase", database_name="enviroDB-CDK"
+        )
+
+        # Timestream table
+        timestream_table = timestream.CfnTable(
+            self,
+            "MyEnviroTimestreamTable",
+            database_name=timestream_database.database_name,
+            table_name="enviroTable-CDK",
+        )
+
+        # Add the dependency
+        timestream_table.add_depends_on(timestream_database)
+
+        # IAM role for Lambda to write to Timestream
+        timestream_write_role = iam.Role(
+            self,
+            "TimestreamWriteRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+        )
+        timestream_write_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=["timestream:WriteRecords"],
+                resources=[timestream_table.attr_arn],
+            )
         )
 
         # Lambda function
@@ -113,32 +144,6 @@ class EnviroLoggerStack(Stack):
 
         # Grant Lambda permissions to read from data bucket
         my_enviro_bucket.grant_read(lambda_function)
-
-        # Timestream database
-        timestream_database = timestream.CfnDatabase(
-            self, "MyEnviroTimestreamDatabase", database_name="enviroDB-CDK"
-        )
-
-        # Timestream table
-        timestream_table = timestream.CfnTable(
-            self,
-            "MyEnviroTimestreamTable",
-            database_name=timestream_database.database_name,
-            table_name="enviroTable-CDK",
-        )
-
-        # IAM role for Lambda to write to Timestream
-        timestream_write_role = iam.Role(
-            self,
-            "TimestreamWriteRole",
-            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
-        )
-        timestream_write_role.add_to_policy(
-            iam.PolicyStatement(
-                actions=["timestream:WriteRecords"],
-                resources=[timestream_table.attr_arn],
-            )
-        )
 
         # Grant Lambda permission to assume the IAM role
         lambda_function.role.add_to_policy(
