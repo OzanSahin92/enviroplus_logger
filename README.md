@@ -1,5 +1,8 @@
 # TODOs
+* Add grafana to stack
 * clean up aws infrastructure
+    * migrate existing infrastructure to cdk stack
+* add unittests for stack
 
 
 # Welcome to your CDK Python project!
