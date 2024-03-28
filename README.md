@@ -1,7 +1,10 @@
 # TODOs
-* Add grafana to stack
-* clean up aws infrastructure
-    * migrate existing infrastructure to cdk stack
+* Remove old aws infrastructure (except timestream database)
+* refactor cdk stack and deploy again
+* update aws credentials on raspbery pi with cdk iam user credentials
+* update aws s3 bucket info on raspberry pi code
+* connect grafana to aws cdk timestream database
+* migrate old timestream db to new and remove old
 * add unittests for stack
 
 
