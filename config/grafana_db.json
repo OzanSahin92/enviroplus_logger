@@ -1,0 +1,607 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 1,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "grafana-timestream-datasource",
+          "uid": "nhvmxTcIk"
+        },
+        "description": "Oxidising: gas resistance for oxidising gases.\nEg chlorine, nitrous oxide\n\nReducing:  gas resistance for reducing gases.\nEg hydrogen, carbon monoxide\n\nNH3: gas resistance for nh3/ammonia\n   ",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "ohm"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "id": 12,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "database": "\"enviroDB\"",
+            "datasource": {
+              "type": "grafana-timestream-datasource",
+              "uid": "nhvmxTcIk"
+            },
+            "measure": "sensor_data",
+            "rawQuery": "select time, cast(oxidising as double) as oxidising\r\nfrom \"enviroDB\".\"enviroTable\"\r\nORDER BY time ASC",
+            "refId": "A",
+            "table": "\"enviroTable\""
+          },
+          {
+            "database": "\"enviroDB\"",
+            "datasource": {
+              "type": "grafana-timestream-datasource",
+              "uid": "nhvmxTcIk"
+            },
+            "hide": false,
+            "measure": "sensor_data",
+            "rawQuery": "select time, cast(reducing as double) as reducing\r\nfrom \"enviroDB\".\"enviroTable\"\r\nORDER BY time ASC",
+            "refId": "B",
+            "table": "\"enviroTable\""
+          },
+          {
+            "database": "\"enviroDB\"",
+            "datasource": {
+              "type": "grafana-timestream-datasource",
+              "uid": "nhvmxTcIk"
+            },
+            "hide": false,
+            "measure": "sensor_data",
+            "rawQuery": "select time, cast(nh3 as double) as nh3\r\nfrom \"enviroDB\".\"enviroTable\"\r\nORDER BY time ASC",
+            "refId": "C",
+            "table": "\"enviroTable\""
+          }
+        ],
+        "title": "Air quality",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "grafana-timestream-datasource",
+          "uid": "nhvmxTcIk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "lux"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "id": 4,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "database": "\"enviroDB\"",
+            "datasource": {
+              "type": "grafana-timestream-datasource",
+              "uid": "nhvmxTcIk"
+            },
+            "measure": "sensor_data",
+            "rawQuery": "select time, cast(brightness as double) as brightness\r\nfrom \"enviroDB\".\"enviroTable\"\r\nORDER BY time ASC\r\n",
+            "refId": "A",
+            "table": "\"enviroTable\""
+          }
+        ],
+        "title": "Brightness",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "grafana-timestream-datasource",
+          "uid": "nhvmxTcIk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "id": 10,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "database": "\"enviroDB\"",
+            "datasource": {
+              "type": "grafana-timestream-datasource",
+              "uid": "nhvmxTcIk"
+            },
+            "measure": "sensor_data",
+            "rawQuery": "select time, cast(humidity as double) as humidity\r\nfrom \"enviroDB\".\"enviroTable\"\r\nORDER BY time ASC",
+            "refId": "A",
+            "table": "\"enviroTable\""
+          }
+        ],
+        "title": "Relative humidity",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "grafana-timestream-datasource",
+          "uid": "nhvmxTcIk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "celsius"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "id": 6,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "database": "\"enviroDB\"",
+            "datasource": {
+              "type": "grafana-timestream-datasource",
+              "uid": "nhvmxTcIk"
+            },
+            "measure": "sensor_data",
+            "rawQuery": "select time, cast(temperature as double) as temperature\r\nfrom \"enviroDB\".\"enviroTable\"\r\nORDER BY time ASC",
+            "refId": "A",
+            "table": "\"enviroTable\""
+          }
+        ],
+        "title": "Temperature",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "grafana-timestream-datasource",
+          "uid": "nhvmxTcIk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "pressurehpa"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        },
+        "id": 8,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "database": "\"enviroDB\"",
+            "datasource": {
+              "type": "grafana-timestream-datasource",
+              "uid": "nhvmxTcIk"
+            },
+            "measure": "sensor_data",
+            "rawQuery": "select time, cast(pressure as double) as pressure\r\nfrom \"enviroDB\".\"enviroTable\"\r\nORDER BY time ASC",
+            "refId": "A",
+            "table": "\"enviroTable\""
+          }
+        ],
+        "title": "Pressure",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "grafana-timestream-datasource",
+          "uid": "nhvmxTcIk"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        },
+        "id": 2,
+        "options": {
+          "footer": {
+            "countRows": false,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true
+        },
+        "pluginVersion": "9.4.7",
+        "targets": [
+          {
+            "database": "\"enviroDB\"",
+            "datasource": {
+              "type": "grafana-timestream-datasource",
+              "uid": "nhvmxTcIk"
+            },
+            "measure": "sensor_data",
+            "rawQuery": "select * from \"enviroDB\".\"enviroTable\" ",
+            "refId": "A",
+            "table": "\"enviroTable\""
+          }
+        ],
+        "title": "Panel Title",
+        "type": "table"
+      }
+    ],
+    "refresh": "",
+    "revision": 1,
+    "schemaVersion": 38,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-12h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "EnviroDashboard",
+    "uid": "cNZF-T5Sk",
+    "version": 9,
+    "weekStart": ""
+  }
